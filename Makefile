@@ -10,9 +10,9 @@ endif
 main: output/main.o # output/chess.o
 	g++ -std=c++20 output/main.o -o main
 
-output/main.o: src/main.cpp
+output/main.o: src/main.cpp include/mcts/*
 	$(MKDIR)
-	g++ -std=c++20 -c src/main.cpp -o output/main.o -I "./include/libchess/include" -I "./include/mcts"
+	g++ -std=c++20 -c src/main.cpp -o output/main.o -I "./include/libchess/include" -I "./include"
 
 clean:
 	$(RM)
