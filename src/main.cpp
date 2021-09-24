@@ -5,6 +5,7 @@
 
 void print_state(Node const & node)
 {
+    std::cout << "--------" << std::endl;
     chess::board board = node.get_state().pieces();
     for(int r = chess::rank_1 ; r <= chess::rank_8 ; ++r)
     {
@@ -12,11 +13,12 @@ void print_state(Node const & node)
             chess::rank rank = static_cast<chess::rank>(r);
             chess::file file = static_cast<chess::file>(f);
             std::pair<chess::side, chess::piece> side_and_piece = board.get(chess::cat_coords(file, rank));
-            std::cout << side_and_piece.first << side_and_piece.second;
-            std::cout << chess::piece_to_san(side_and_piece.first, side_and_piece.second);
+            char piece = side_and_piece.second == chess::piece::piece_none ? ' ' : chess::piece_to_san(side_and_piece.first, side_and_piece.second);
+            std::cout << piece;
         }
         std::cout << std::endl;
     }
+    std::cout << "--------" << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -59,7 +61,6 @@ int main(int argc, char* argv[])
             }
             // Rollout and backpropagate
             current_node->rollout(generator);
-        
             current_node->backpropagate();
         }
 
@@ -72,7 +73,8 @@ int main(int argc, char* argv[])
         new_state.make_move(new_state.moves().front());
         main_node = Node(new_state, new_state.get_turn(), player_side, true, nullptr, chess::move());
         //print_state(main_node);
-        std::cout << moves++ << std::endl;
+        print_state(main_node);
+        system("pause");
     }
 
     std::cout << "done.";
