@@ -17,3 +17,16 @@ inline Iterator random_element(Iterator start, Iterator end)
     return random_element(start, end, generator);
 }
 
+template<typename Iterator>
+size_t get_max_idx(Iterator start, Iterator end)
+{
+    return std::distance(start, std::max_element(start, end));
+}
+
+template<typename T, typename Iterator1, typename Iterator2>
+T get_max_element(Iterator1 wanted_start, Iterator2 comparator_start, Iterator2 comparator_end)
+{
+    size_t max_idx = get_max_idx(comparator_start, comparator_end);
+    std::advance(wanted_start, max_idx);
+    return *wanted_start;
+}
