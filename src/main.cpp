@@ -19,7 +19,10 @@ int main(int argc, char* argv[])
     Node main_node{start_p, player_side, player_side, true, nullptr, chess::move()};
     std::cout << "Initialized engine and monte carlo node";
 
-    //while(!main_node.)
+    while(!main_node.is_over())
+    {
+        break;
+    }
 
     std::cout << "done.";
 

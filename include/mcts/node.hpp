@@ -159,6 +159,11 @@ class Node
             return state;
         }
 
+        bool is_over() const
+        {
+            return state.is_checkmate() || state.is_stalemate();
+        }
+
         constexpr static double const win_score = 1;
         constexpr static double const draw_score = 0;
 
