@@ -139,7 +139,7 @@ class Node
         }
 
         // Can be useful if we want to keep the tree from the previous iterations
-        Node* best_child()
+        Node* best_child() const
         {
             std::vector<double> UCB1_scores{};
             for (auto it{children.begin()}; it != children.end(); ++it)
@@ -149,9 +149,14 @@ class Node
             return get_max_element<Node*>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
         }
         // Useful for baseline mcts algorithm
-        chess::move best_move()
+        chess::move best_move() const
         {
             return best_child()->move;
+        }
+
+        chess::position get_state() const
+        {
+            return state;
         }
 
         constexpr static double const win_score = 1;
