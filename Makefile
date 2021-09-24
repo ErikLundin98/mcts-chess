@@ -14,5 +14,7 @@ output/main.o: src/main.cpp include/mcts/*
 	$(MKDIR)
 	g++ -std=c++20 -c src/main.cpp -o output/main.o -I "./include/libchess/include" -I "./include"
 
+debug:
+	g++ -g -std=c++20 -c src/main.cpp -o output/main_debug.o -I "./include/libchess/include" -I "./include"
 clean:
 	$(RM)

@@ -10,6 +10,7 @@
 #include <float.h>
 #include <math.h>
 #include <iterator>
+#include <iostream>
 
 class Node
 {
@@ -27,6 +28,7 @@ class Node
             this->t = 0;
             this->n = 0;
         }
+        ~Node() = default;
 
         inline std::vector<Node *> get_children() const
         {
@@ -35,6 +37,7 @@ class Node
         template <typename RNG>
         inline void rollout(RNG generator)
         {
+            //std::cout << "rollout ";
             chess::position rollout_state{state};
             // by default, do random rollouts
             short uneventful_timer = 0;
@@ -43,7 +46,8 @@ class Node
                 std::vector<chess::move> available_moves{rollout_state.moves()};
                 chess::move random_choice = *random_element(std::begin(available_moves), std::end(available_moves), generator);
                 chess::undo undo = rollout_state.make_move(random_choice);
-                uneventful_timer = undo.capture != chess::piece::piece_none ? 0 : uneventful_timer++;
+                uneventful_timer = undo.capture != chess::piece::piece_none ? 0 : uneventful_timer + 1;
+                //std::cout << " " << uneventful_timer << " ";
             }
 
             bool is_player_turn = rollout_state.get_turn() == player_side;
@@ -56,10 +60,12 @@ class Node
             {
                 t = draw_score;
             }
+            //std::cout << "rollout done ";
         }
 
         inline void backpropagate()
         {
+            //std::cout << "backpropagation ";
             if (parent)
             {
                 parent->t += t;
@@ -70,17 +76,18 @@ class Node
                     parent->backpropagate();
                 }
             }
+            //std::cout << "backpropagation done ";
         }
 
         inline void expand()
-        {
+        {   
+            //std::cout << "expansion " << std::endl;
             std::vector<chess::move> available_moves{state.moves()};
 
             for (auto it{available_moves.begin()}; it != available_moves.end(); ++it)
-            {
-                chess::position child_state = state;
-                child_state.make_move(*it); // TODO: This will alternate between our and enemy move
-                Node *new_child = new Node(child_state, child_state.get_turn(), player_side, false, this, *it);
+            {   
+                chess::position child_state = state.copy_move(*it); // TODO - plays random moves for both players
+                Node * new_child = new Node(child_state, child_state.get_turn(), player_side, false, this, *it);
                 if (new_child->state.is_checkmate() || new_child->state.is_stalemate())
                 {
                     if (new_child->state.is_checkmate())
@@ -93,13 +100,15 @@ class Node
                     }
                     new_child->n = 1;
                     new_child->backpropagate();
-                    children.push_back(new_child);
                 }
+                children.push_back(new_child);
             }
+            //std::cout << "expansion done ";
         }
 
         inline double UCB1()
         {
+            //std::cout << "UCB1 ";
             if (n == 0 || (parent && parent->n))
             {
                 return DBL_MAX;
@@ -113,12 +122,13 @@ class Node
         }
 
         inline Node *traverse()
-        {
+        {   
+            //std::cout << "traversal ";
             std::vector<double> UCB1_scores{};
             for (auto it{children.begin()}; it != children.end(); ++it)
             {
-                if (!(*it)->is_terminal_node)
-                    UCB1_scores.push_back((*it)->UCB1());
+                if (!(*it)->is_terminal_node) UCB1_scores.push_back((*it)->UCB1());
+                   
             }
             if (UCB1_scores.size() == 0)
             {
@@ -158,10 +168,13 @@ class Node
         {
             return state;
         }
-
         bool is_over() const
         {
-            return state.is_checkmate() || state.is_stalemate();
+            return is_terminal_node || state.is_checkmate() || state.is_stalemate();
+        }
+        int get_n() const
+        {
+            return n;
         }
 
         constexpr static double const win_score = 1;
