@@ -25,11 +25,11 @@ inline double random_rollout(chess::position state, chess::side player_turn, std
         bool is_player_turn = rollout_state.get_turn() == player_turn;
         if (rollout_state.is_checkmate())
         {
-            accumulated_t += is_player_turn ? -1 : 1; // TODO: Parametrize
+            accumulated_t += is_player_turn ? -node::Node::WIN_SCORE : node::Node::WIN_SCORE;
         }
         else
         {
-            accumulated_t += 0; //TODO
+            accumulated_t += node::Node::DRAW_SCORE;
         }
     }
     

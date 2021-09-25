@@ -15,7 +15,8 @@ int main(int argc, char* argv[])
     
     // Initialize engine
     chess::init();
-
+    // If we want to override rewards
+    node::init(1.0, 0.0);
     // Initialize random generator
     static std::random_device random_device;
     static std::mt19937 generator(random_device());
