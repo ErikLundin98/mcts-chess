@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     // position with check mate in 1 turn for white: chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
     chess::position start_p = chess::position::from_fen(chess::position::fen_start);
     
-    Node main_node{start_p, player_side, player_side, true, nullptr, chess::move()};
+    node::Node main_node{start_p, player_side, player_side, true, nullptr, chess::move()};
     
     std::cout << "Initialized engine and monte carlo node" << std::endl;
     std::cout << "Using amount of mcts iterations=" << MAX_MCTS_ITERATIONS << std::endl;
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
         main_node.expand();
         for(int i = 0 ; i < MAX_MCTS_ITERATIONS ; ++i)
         {
-            Node* current_node{main_node.traverse()};
+            node::Node* current_node{main_node.traverse()};
             if(current_node->is_over()) break;
             
             if(current_node->get_n() != 0)
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         if(new_state.is_checkmate() || new_state.is_stalemate()) break;
         // CPU move
         new_state.make_move(new_state.moves().front());
-        main_node = Node{new_state, new_state.get_turn(), player_side, true, nullptr, chess::move()};
+        main_node = node::Node{new_state, new_state.get_turn(), player_side, true, nullptr, chess::move()};
     }
 
     std::cout << "done. Final state:\n" << main_node.get_state().pieces().to_string();

@@ -11,7 +11,8 @@
 #include <iostream>
 #include <functional>
 
-
+namespace node
+{
 class Node
 {
     public:
@@ -181,3 +182,4 @@ class Node
         double t;
         int n;
 };
+}

@@ -16,9 +16,9 @@ int main()
     
     auto policy = bad_rollout; //std::bind(random_rollout, std::placeholders::_1, std::placeholders::_2, generator);
 
-    Node main_node = Node{start_p, player_side, player_side};
+    node::Node main_node = node::Node{start_p, player_side, player_side};
     main_node.expand();
-    Node* second_child = main_node.get_children().front();
+    node::Node* second_child = main_node.get_children().front();
     second_child->rollout(policy);
     std::cout << "done";
 }
