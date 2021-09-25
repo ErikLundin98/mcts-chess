@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     static std::mt19937 generator(random_device());
 
     // Set rollout policy
-    auto policy = std::bind(random_rollout, std::placeholders::_1, std::placeholders::_2, generator);
+    auto policy = std::bind(random_rollout<10>, std::placeholders::_1, std::placeholders::_2, generator);
 
     // Initialize MCTS node
     chess::side player_side = chess::side::side_white;

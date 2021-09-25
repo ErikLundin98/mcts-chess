@@ -5,11 +5,11 @@
 #include <chess/chess.hpp>
 #include <iostream>
 
+template<int N_ITER>
 inline double random_rollout(chess::position state, chess::side player_turn, std::mt19937 & generator)
 {
     double accumulated_t{0};
-    int n_rollouts{10};
-    for (int i = 0; i < n_rollouts; ++i)
+    for (int i = 0; i < N_ITER; ++i)
     {
         chess::position rollout_state = state;
         // by default, do random rollouts
@@ -33,7 +33,7 @@ inline double random_rollout(chess::position state, chess::side player_turn, std
         }
     }
     
-    return accumulated_t / n_rollouts;
+    return accumulated_t / N_ITER;
 };
 
 inline double bad_rollout(chess::position state, chess::side player_turn)
