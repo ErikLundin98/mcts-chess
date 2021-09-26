@@ -14,7 +14,7 @@ int main()
     static std::mt19937 generator(random_device());
 
     
-    auto policy = policy::bad_rollout; //std::bind(random_rollout<1>, std::placeholders::_1, std::placeholders::_2, generator);
+    auto policy = policy::rollout::bad_rollout; //std::bind(random_rollout<1>, std::placeholders::_1, std::placeholders::_2, generator);
 
     node::Node main_node = node::Node{start_p, player_side, player_side};
     main_node.expand();
