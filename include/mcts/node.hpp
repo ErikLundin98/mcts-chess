@@ -187,7 +187,7 @@ namespace node
     double Node::WIN_SCORE = 1.0;
     double Node::DRAW_SCORE = 0.0;
 
-    inline void init(double win_score, double draw_score) {
+    void init(double win_score, double draw_score) {
         Node::WIN_SCORE = win_score;
         Node::DRAW_SCORE = draw_score;
     };
