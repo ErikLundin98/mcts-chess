@@ -33,7 +33,14 @@ namespace node
             }
             // Used to create a parent node
             Node(chess::position state, chess::side side, chess::side player_side) : Node(state, side, player_side, true, nullptr, chess::move()) {}
-            ~Node() = default;
+            ~Node() 
+            {
+                for(Node* child : children)
+                {
+                    delete child;
+                }
+                children.clear();
+            }
 
             // Get child nodes
             inline std::vector<Node *> get_children() const
