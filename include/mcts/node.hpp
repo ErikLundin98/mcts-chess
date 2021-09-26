@@ -45,7 +45,7 @@ namespace node
                 n++;
             }
 
-            inline void backpropagate()
+            void backpropagate()
             {
                 if (parent)
                 {
@@ -59,7 +59,7 @@ namespace node
                 }
             }
 
-            inline void expand()
+            void expand()
             {   
                 std::vector<chess::move> available_moves{state.moves()};
                 for (chess::move child_move : available_moves)
@@ -83,7 +83,7 @@ namespace node
                 }
             }
 
-            inline double UCB1()
+            inline double UCB1() const
             {
                 if (n == 0 || (parent && parent->n==0))
                 {
@@ -97,7 +97,7 @@ namespace node
                 }
             }
             // Function that determines next node to expand/rollout
-            inline Node *traverse()
+            Node *traverse()
             {
                 std::vector<double> UCB1_scores{};
                 for (Node* child : children)
