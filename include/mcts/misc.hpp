@@ -1,6 +1,14 @@
+#pragma once
+
 #include <random>
 #include <iterator>
 #include <chrono>
+#include <fstream>
+#include <unordered_map>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
 
 // Retrieve an iterator at a random position
 template<typename Iterator, typename RandomGenerator>
@@ -56,3 +64,20 @@ struct Timer
 
     std::chrono::time_point<std::chrono::high_resolution_clock> start_t = std::chrono::high_resolution_clock::now();
 };
+
+// Simple function to get key(string) val(int) pairs from file to dict
+std::unordered_map<std::string, int> parse_config(std::string filename)
+{
+    std::unordered_map<std::string, int> dict{};
+    std::ifstream is(filename);
+    std::string line;
+    size_t sep_idx;
+    while(std::getline(is, line))
+    {
+        sep_idx = line.find('=');
+        std::string key{line.substr(0, sep_idx)};
+        std::string val{line.substr(sep_idx+1)};
+        dict.insert({key, std::stoi(val)});
+    }
+    return dict;
+}

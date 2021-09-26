@@ -5,31 +5,31 @@
 #include <mcts/policy.hpp>
 #include <functional>
 #include <memory>
+#include <unordered_map>
 // Usage: ./main MCTS_ITER MAX_MOVES print_time
 // E.g. ./main 30 1000 1, ./main 30 50 1
 int main(int argc, char* argv[])
 {
-    
-    int MAX_MCTS_ITERATIONS{50};
-    int MAX_MOVES{1000};
-    bool print_time = 0;
-    if(argc > 3) 
-    {
-        MAX_MCTS_ITERATIONS = std::stoi(argv[1]);
-        MAX_MOVES = std::stoi(argv[2]);
-        print_time = std::stoi(argv[3]);
-    }
-
+    std::string config_file_name{"config.txt"};
+    if(argc > 1) config_file_name = argv[1];
+    std::unordered_map<std::string, int> dict = parse_config(config_file_name);
+    int MAX_MOVES = dict["MAX_MOVES"];
+    int MAX_MCTS_ITERATIONS = dict["MAX_MCTS_ITERATIONS"];
+    int PRINT_TIME = dict["PRINT_TIME"];
+    int ROLLOUT_SIMULATIONS = dict["ROLLOUT_SIMULATIONS"];
+    int WIN_SCORE = dict["WIN_SCORE"];
+    int DRAW_SCORE = dict["DRAW_SCORE"];
+    int PRINT_DEPTH = dict["PRINT_DEPTH"];
     // Initialize engine
     chess::init();
     // If we want to override rewards
-    node::init(1.0, 0.0);
+    node::init(WIN_SCORE, DRAW_SCORE);
 
     // Initialize random generator
     static std::random_device random_device;
     static std::mt19937 generator(random_device());
     // Set rollout policy
-    auto policy = std::bind(policy::rollout::random_rollout, std::placeholders::_1, std::placeholders::_2, generator, 10);
+    auto policy = std::bind(policy::rollout::random_rollout, std::placeholders::_1, std::placeholders::_2, generator, ROLLOUT_SIMULATIONS);
 
     // Initialize MCTS node
     chess::side player_side = chess::side::side_white;
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
             t_backpropping += timer.get_time();
         }
 
-        std::cout << "--- Node tree after search ---" << std::endl << main_node->to_string(0) << std::endl << std::endl;
+        std::cout << "--- Node tree after search ---" << std::endl << main_node->to_string(PRINT_DEPTH) << std::endl << std::endl;
         // MCTS move
         chess::move best_move = main_node->best_move();
         std::cout << "decided to make move " << best_move.to_lan() << ", total player moves: " << moves << '/' << MAX_MOVES << std::endl;
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     std::cout << "done. Final state:\n" << main_node->get_state().pieces().to_string() << std::endl;
     std::cout << "statistics:\nstale mate" <<  main_node->get_state().is_stalemate()
     << "\ncheck mate" <<  main_node->get_state().is_checkmate();
-    if(print_time)
+    if(PRINT_TIME)
     {
         std::cout 
         << "MCTS time report (in s): \ntime spent traversing: " << t_traversing 
