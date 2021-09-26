@@ -43,7 +43,7 @@ struct Timer
     double get_time(bool setstart=false)
     {
         auto new_t = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(new_t-start_t).count();
+        auto duration = new_t-start_t;
         double time = std::chrono::duration<double>(duration).count();
         if(setstart) set_start();
         return time;

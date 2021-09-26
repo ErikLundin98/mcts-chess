@@ -37,8 +37,6 @@ int main(int argc, char* argv[])
     chess::position start_p = chess::position::from_fen(chess::position::fen_start); // Or chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
     node::Node main_node{start_p, player_side, player_side};
     
-    std::cout << "Initialized engine and monte carlo node" << std::endl;
-    std::cout << "Using amount of mcts iterations=" << MAX_MCTS_ITERATIONS << std::endl;
     short moves{0};
 
     Timer timer{};
@@ -46,7 +44,7 @@ int main(int argc, char* argv[])
     double t_traversing{0};
     double t_rollouting{0};
     double t_backpropping{0};
-    // Main loop
+    // Main MCTS loop
     while(!main_node.is_over() && moves++ < MAX_MOVES)
     {
         main_node.expand();
@@ -72,6 +70,7 @@ int main(int argc, char* argv[])
         }
 
         std::cout << "--- Node tree after search ---" << std::endl << main_node.to_string(0) << std::endl << std::endl;
+        // MCTS move
         chess::move best_move = main_node.best_move();
         std::cout << "decided to make move " << best_move.to_lan() << ", total player moves: " << moves << std::endl;
         chess::position new_state = main_node.get_state().copy_move(best_move);
@@ -85,8 +84,11 @@ int main(int argc, char* argv[])
 
     if(print_time)
     {
-        std::cout << "MCTS time report (in \u00B5s) \ntime spent traversing: " << t_traversing << "\ntime spent expanding: " << t_expanding <<
-        "\ntime spent rollouting: " << t_rollouting << "\ntime spent backpropping:" << t_backpropping;
+        std::cout 
+        << "MCTS time report (in s): \ntime spent traversing: " << t_traversing 
+        << "\ntime spent expanding: " << t_expanding 
+        << "\ntime spent rollouting: " << t_rollouting 
+        << "\ntime spent backpropping:" << t_backpropping;
     }
     return 0;
 }
