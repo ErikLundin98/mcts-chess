@@ -14,6 +14,7 @@
 namespace node
 {
     using policy_function_type = std::function<double(const chess::position&, chess::side)>;
+    
     class Node
     {
         public:

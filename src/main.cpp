@@ -9,7 +9,7 @@
 // E.g. ./main 30 1000 1, ./main 30 50 1
 int main(int argc, char* argv[])
 {
-
+    
     int MAX_MCTS_ITERATIONS{50};
     int MAX_MOVES{1000};
     bool print_time = 0;

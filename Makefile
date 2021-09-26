@@ -8,11 +8,11 @@ endif
 
 
 main: output/main.o # output/chess.o
-	g++ -std=c++20 output/main.o -o main
+	g++ -std=c++20 -O3 output/main.o -o main
 
 output/main.o: src/main.cpp include/mcts/*
 	$(MKDIR)
-	g++ -std=c++20 -c src/main.cpp -o output/main.o -I "./include/libchess/include" -I "./include"
+	g++ -std=c++20 -O3 -c src/main.cpp -o output/main.o -I "./include/libchess/include" -I "./include"
 
 test: output/test.o # output/chess.o
 	g++ -std=c++20 output/test.o -o test
