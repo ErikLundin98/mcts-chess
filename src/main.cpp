@@ -1,13 +1,13 @@
-#include <iostream>
-#include <string>
 #include <chess/chess.hpp>
 #include <mcts/node.hpp>
 #include <mcts/policy.hpp>
-#include <functional>
+#include <iostream>
+#include <string>
 #include <memory>
 #include <unordered_map>
-// Usage: ./main MCTS_ITER MAX_MOVES print_time
-// E.g. ./main 30 1000 1, ./main 30 50 1
+
+// Usage: ./main MCTS_ITER <config filename>
+
 int main(int argc, char* argv[])
 {
     std::string config_file_name{"config.txt"};
@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
     int WIN_SCORE = dict["WIN_SCORE"];
     int DRAW_SCORE = dict["DRAW_SCORE"];
     int PRINT_DEPTH = dict["PRINT_DEPTH"];
+
     // Initialize engine
     chess::init();
     // If we want to override rewards
@@ -86,9 +87,8 @@ int main(int argc, char* argv[])
         main_node = std::make_shared<node::Node>(new_state, new_state.get_turn(), player_side, true, std::weak_ptr<node::Node>(), best_move);
     }
     
-    std::cout << "done. Final state:\n" << main_node->get_state().pieces().to_string() << std::endl;
-    std::cout << "statistics:\nstale mate" <<  main_node->get_state().is_stalemate()
-    << "\ncheck mate" <<  main_node->get_state().is_checkmate();
+    std::cout << "Game over. Final state:\n" << main_node->get_state().pieces().to_string() << std::endl;
+    
     if(PRINT_TIME)
     {
         std::cout 

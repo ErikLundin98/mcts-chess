@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <algorithm>
 
 // Retrieve an iterator at a random position

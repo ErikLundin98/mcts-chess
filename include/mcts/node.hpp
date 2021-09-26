@@ -176,7 +176,7 @@ namespace node
 
                 if(layers_left > 0) {
                     tree += '\n' + "---children depth " + std::to_string(layers_left) + " ---\n";
-                    for(auto child_ptr : children)
+                    for(std::shared_ptr<Node> child_ptr : children)
                     {
                         tree += child_ptr->to_string(layers_left-1) + '\n';
                     }
