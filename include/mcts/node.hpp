@@ -69,7 +69,7 @@ namespace node
                 std::vector<chess::move> available_moves{state.moves()};
                 for (chess::move child_move : available_moves)
                 {
-                    chess::position child_state = state.copy_move(child_move); // TODO - plays random moves for both players
+                    chess::position child_state = state.copy_move(child_move); // TODO - Make this optional
                     std::shared_ptr<Node> new_child = std::make_shared<Node>(child_state, child_state.get_turn(), player_side, false, weak_from_this(), child_move);
                     if (new_child->state.is_checkmate() || new_child->state.is_stalemate())
                     {

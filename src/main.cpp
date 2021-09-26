@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
     chess::side player_side = chess::side::side_white;
     chess::side enemy_side = chess::side::side_black;
     chess::position start_p = chess::position::from_fen(chess::position::fen_start); // Or chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
+    // TODO: Make working with nodes easier for the user
     std::shared_ptr<node::Node> main_node = std::make_shared<node::Node>(start_p, player_side, player_side);
     
     short moves{0};
