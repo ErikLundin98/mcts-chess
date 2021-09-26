@@ -64,7 +64,7 @@ struct Timer
     std::chrono::time_point<std::chrono::high_resolution_clock> start_t = std::chrono::high_resolution_clock::now();
 };
 
-// Simple function to get key(string) val(int) pairs from file to dict
+// Simple function to get key(string) val(int) pairs from file to Map
 std::unordered_map<std::string, int> parse_config(std::string filename)
 {
     std::unordered_map<std::string, int> dict{};
