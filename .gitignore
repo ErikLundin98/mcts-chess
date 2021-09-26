@@ -2,3 +2,4 @@
 *.o
 .vscode
 include/libchess
+safetycopy_leaks

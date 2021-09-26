@@ -10,16 +10,17 @@
 #include <iterator>
 #include <iostream>
 #include <functional>
+#include <memory>
 
 namespace node
 {
     using policy_function_type = std::function<double(const chess::position&, chess::side)>;
     
-    class Node
+    class Node : public std::enable_shared_from_this<Node>
     {
         public:
             // Used to create a node that is not a parent node
-            Node(chess::position state, chess::side side, chess::side player_side, bool is_start_node, Node *parent, chess::move move)
+            Node(chess::position state, chess::side side, chess::side player_side, bool is_start_node, std::weak_ptr<Node> parent, chess::move move)
                 : state{state},
                 node_side{side},
                 player_side{player_side},
@@ -32,18 +33,10 @@ namespace node
                 this->n = 0;
             }
             // Used to create a parent node
-            Node(chess::position state, chess::side side, chess::side player_side) : Node(state, side, player_side, true, nullptr, chess::move()) {}
-            ~Node() 
-            {
-                for(Node* child : children)
-                {
-                    delete child;
-                }
-                children.clear();
-            }
-
+            Node(chess::position state, chess::side side, chess::side player_side) : Node(state, side, player_side, true, std::weak_ptr<Node>(), chess::move()) {}
+            ~Node() = default;
             // Get child nodes
-            inline std::vector<Node *> get_children() const
+            inline std::vector<std::shared_ptr<Node>> get_children() const
             {
                 return this->children;
             }
@@ -58,14 +51,14 @@ namespace node
             // Backpropagate score and visits to parent node
             void backpropagate()
             {
-                if (parent)
+                if (auto p = parent.lock())
                 {
-                    parent->t += t;
-                    parent->n++;
+                    p->t += t;
+                    p->n++;
 
-                    if (!parent->is_start_node)
+                    if (!p->is_start_node)
                     {
-                        parent->backpropagate();
+                        p->backpropagate();
                     }
                 }
             }
@@ -77,7 +70,7 @@ namespace node
                 for (chess::move child_move : available_moves)
                 {
                     chess::position child_state = state.copy_move(child_move); // TODO - plays random moves for both players
-                    Node * new_child = new Node{child_state, child_state.get_turn(), player_side, false, this, child_move};
+                    std::shared_ptr<Node> new_child = std::make_shared<Node>(child_state, child_state.get_turn(), player_side, false, weak_from_this(), child_move);
                     if (new_child->state.is_checkmate() || new_child->state.is_stalemate())
                     {
                         if (new_child->state.is_checkmate())
@@ -98,23 +91,24 @@ namespace node
             // UCB1 scoring function
             inline double UCB1() const
             {
-                if (n == 0 || (parent && parent->n==0))
+                auto p = parent.lock();
+                if (n == 0 || (p && p->n==0))
                 {
                     return DBL_MAX;
                 }
                 else
                 {
                     double v_bar = t / n;
-                    int N = parent ? parent->n : 1;
+                    int N = p ? p->n : 1;
                     return v_bar + sqrt(2 * log(N) / n);
                 }
             }
 
             // Determine next node to expand/rollout by traversing tree
-            Node *traverse()
+            std::shared_ptr<Node> traverse()
             {
                 std::vector<double> UCB1_scores{};
-                for (Node* child : children)
+                for (std::shared_ptr<Node> child : children)
                 {
                     if (!child->is_terminal_node)
                         UCB1_scores.push_back(child->UCB1());
@@ -122,10 +116,10 @@ namespace node
                 if (UCB1_scores.size() == 0)
                 {
                     is_terminal_node = true;
-                    return parent ? parent : this;
+                    return parent.lock() ? parent.lock() : shared_from_this();
                 }
 
-                Node *best_child = get_max_element<Node *>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
+                std::shared_ptr<Node> best_child = get_max_element<std::shared_ptr<Node>>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
 
                 if (best_child->children.size() > 0)
                 {
@@ -139,14 +133,14 @@ namespace node
 
             // Retrieve the best child node based on UCB1 score
             // Can be useful if we want to keep the tree from the previous iterations
-            Node *best_child() const
+            std::shared_ptr<Node> best_child() const
             {
                 std::vector<double> UCB1_scores{};
-                for (auto it{children.begin()}; it != children.end(); ++it)
+                for (std::shared_ptr<Node> child : children)
                 {
-                    UCB1_scores.push_back((*it)->UCB1());
+                    UCB1_scores.push_back(child->UCB1());
                 }
-                return get_max_element<Node *>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
+                return get_max_element<std::shared_ptr<Node>>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
             }
             // Get the move that gives the best child
             // Useful for baseline mcts algorithm
@@ -200,8 +194,8 @@ namespace node
             chess::move move;
             bool is_start_node;
             bool is_terminal_node = false;
-            Node *parent;
-            std::vector<Node *> children;
+            std::weak_ptr<Node> parent;
+            std::vector<std::shared_ptr<Node>> children;
             double t;
             int n;
     };
