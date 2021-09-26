@@ -2,6 +2,7 @@
 #include <iterator>
 #include <chrono>
 
+// Retrieve an iterator at a random position
 template<typename Iterator, typename RandomGenerator>
 Iterator random_element(Iterator start, Iterator end, RandomGenerator& generator)
 {
@@ -10,6 +11,7 @@ Iterator random_element(Iterator start, Iterator end, RandomGenerator& generator
     return start;
 };
 
+// Retrieve a random element between two iterators
 template<typename Iterator>
 Iterator random_element(Iterator start, Iterator end)
 {
@@ -18,12 +20,14 @@ Iterator random_element(Iterator start, Iterator end)
     return random_element(start, end, generator);
 };
 
+// Get the index of the maximum element between two iterators
 template<typename Iterator>
 size_t get_max_idx(Iterator start, Iterator end)
 {
     return std::distance(start, std::max_element(start, end));
 };
 
+// Get the max element between two iterators
 template<typename T, typename Iterator1, typename Iterator2>
 T get_max_element(Iterator1 wanted_start, Iterator2 comparator_start, Iterator2 comparator_end)
 {
@@ -32,6 +36,7 @@ T get_max_element(Iterator1 wanted_start, Iterator2 comparator_start, Iterator2 
     return *wanted_start;
 };
 
+// Simple timer class for measuring execution time
 struct Timer
 {
     Timer()

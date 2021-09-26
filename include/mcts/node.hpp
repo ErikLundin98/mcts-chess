@@ -33,17 +33,21 @@ namespace node
             Node(chess::position state, chess::side side, chess::side player_side) : Node(state, side, player_side, true, nullptr, chess::move()) {}
             ~Node() = default;
 
+            // Get child nodes
             inline std::vector<Node *> get_children() const
             {
                 return this->children;
             }
-            template<typename PolicyFunction>
-            void rollout(PolicyFunction rollout_policy)
+
+            // Perform rollout from state
+            template<typename Policy_Function>
+            void rollout(Policy_Function rollout_policy)
             {
                 t = rollout_policy(state, player_side);
                 n++;
             }
 
+            // Backpropagate score and visits to parent node
             void backpropagate()
             {
                 if (parent)
@@ -58,6 +62,7 @@ namespace node
                 }
             }
 
+            // Expand node
             void expand()
             {   
                 std::vector<chess::move> available_moves{state.moves()};
@@ -82,6 +87,7 @@ namespace node
                 }
             }
 
+            // UCB1 scoring function
             inline double UCB1() const
             {
                 if (n == 0 || (parent && parent->n==0))
@@ -95,7 +101,8 @@ namespace node
                     return v_bar + sqrt(2 * log(N) / n);
                 }
             }
-            // Function that determines next node to expand/rollout
+
+            // Determine next node to expand/rollout by traversing tree
             Node *traverse()
             {
                 std::vector<double> UCB1_scores{};
@@ -122,6 +129,7 @@ namespace node
                 }
             }
 
+            // Retrieve the best child node based on UCB1 score
             // Can be useful if we want to keep the tree from the previous iterations
             Node *best_child() const
             {
@@ -132,24 +140,31 @@ namespace node
                 }
                 return get_max_element<Node *>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
             }
+            // Get the move that gives the best child
             // Useful for baseline mcts algorithm
             chess::move best_move() const
             {
                 return best_child()->move;
             }
 
+            // Get state
             chess::position get_state() const
             {
                 return state;
             }
+
+            // Check if current state is a terminal state
             bool is_over() const
             {
                 return is_terminal_node || state.is_checkmate() || state.is_stalemate();
             }
+
+            // Get amount of vists
             int get_n() const
             {
                 return n;
             }
+
             // Print the main node and its children
             std::string to_string(int layers_left=1) const
             {
@@ -186,6 +201,9 @@ namespace node
     double Node::WIN_SCORE = 1.0;
     double Node::DRAW_SCORE = 0.0;
 
+    // Initialize node library 
+    // Sets reward scores
+    // Not necessary unless modifying scores is desired
     void init(double win_score, double draw_score) {
         Node::WIN_SCORE = win_score;
         Node::DRAW_SCORE = draw_score;

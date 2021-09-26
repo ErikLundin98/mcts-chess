@@ -5,13 +5,17 @@
 #include <chess/chess.hpp>
 #include <iostream>
 
+// Stores some different policies that can be used by Node
 namespace policy
 {
-    template<int N_ITER>
+
+    // Random rollout policy
+    // N_ITER denotes amount of simulated games to play from start state
+    template<int N_Iter>
     double random_rollout(chess::position state, chess::side player_turn, std::mt19937 & generator)
     {
         double accumulated_t{0};
-        for (int i = 0; i < N_ITER; ++i)
+        for (int i = 0; i < N_Iter; ++i)
         {
             chess::position rollout_state = state;
             // by default, do random rollouts
@@ -35,9 +39,10 @@ namespace policy
             }
         }
         
-        return accumulated_t / N_ITER;
+        return accumulated_t / N_Iter;
     };
 
+    // Bad rollout for demonstration purposes only
     double bad_rollout(chess::position state, chess::side player_turn)
     {
         return 0;
