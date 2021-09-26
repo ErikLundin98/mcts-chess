@@ -9,7 +9,6 @@
 #include <math.h>
 #include <iterator>
 #include <iostream>
-#include <functional>
 
 namespace node
 {
