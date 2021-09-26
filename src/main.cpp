@@ -72,16 +72,23 @@ int main(int argc, char* argv[])
         std::cout << "--- Node tree after search ---" << std::endl << main_node->to_string(0) << std::endl << std::endl;
         // MCTS move
         chess::move best_move = main_node->best_move();
-        std::cout << "decided to make move " << best_move.to_lan() << ", total player moves: " << moves << std::endl;
+        std::cout << "decided to make move " << best_move.to_lan() << ", total player moves: " << moves << '/' << MAX_MOVES << std::endl;
         chess::position new_state = main_node->get_state().copy_move(best_move);
-        if(new_state.is_checkmate() || new_state.is_stalemate()) break;
+        if(new_state.is_checkmate() || new_state.is_stalemate()) 
+        {
+            std::cout << "yup." << std::endl;
+            break;
+        }
         // CPU move
-        new_state.make_move(new_state.moves().front());
+        std::vector<chess::move> cpu_moves{new_state.moves()};
+        chess::move cpu_move = *random_element(cpu_moves.begin(), cpu_moves.end(), generator);
+        new_state.make_move(cpu_move);
         main_node = std::make_shared<node::Node>(new_state, new_state.get_turn(), player_side, true, std::weak_ptr<node::Node>(), best_move);
     }
     
     std::cout << "done. Final state:\n" << main_node->get_state().pieces().to_string() << std::endl;
-
+    std::cout << "statistics:\nstale mate" <<  main_node->get_state().is_stalemate()
+    << "\ncheck mate" <<  main_node->get_state().is_checkmate();
     if(print_time)
     {
         std::cout 

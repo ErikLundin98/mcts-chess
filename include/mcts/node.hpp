@@ -81,6 +81,7 @@ namespace node
                         {
                             new_child->t = DRAW_SCORE;
                         }
+                        new_child->is_terminal_node = true;
                         new_child->n = 1;
                         new_child->backpropagate();
                     }
