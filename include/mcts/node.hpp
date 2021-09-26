@@ -9,10 +9,11 @@
 #include <math.h>
 #include <iterator>
 #include <iostream>
+#include <functional>
 
 namespace node
 {
-
+    using policy_function_type = std::function<double(const chess::position&, chess::side)>;
     class Node
     {
         public:
@@ -40,8 +41,7 @@ namespace node
             }
 
             // Perform rollout from state
-            template<typename Policy_Function>
-            void rollout(Policy_Function rollout_policy)
+            void rollout(policy_function_type rollout_policy)
             {
                 t = rollout_policy(state, player_side);
                 n++;
