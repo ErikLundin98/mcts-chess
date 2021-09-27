@@ -98,7 +98,7 @@ namespace node
                 {
                     double v_bar = t / n;
                     int N = p ? p->n : 1;
-                    return v_bar + sqrt(2 * log(N) / n);
+                    return v_bar + 2.0*sqrt(log(N) / n);
                 }
             }
 
