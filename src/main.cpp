@@ -78,7 +78,8 @@ int main(int argc, char* argv[])
         chess::position new_state = main_node->get_state().copy_move(best_move);
         if(new_state.is_checkmate() || new_state.is_stalemate()) 
         {
-            std::cout << "yup." << std::endl;
+            // Break if game over
+            main_node = std::make_shared<node::Node>(new_state, new_state.get_turn(), player_side, true, std::weak_ptr<node::Node>(), best_move);
             break;
         }
         // CPU move

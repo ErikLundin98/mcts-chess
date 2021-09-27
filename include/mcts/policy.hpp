@@ -14,6 +14,7 @@ namespace policy
     {
         // Random rollout policy
         // n_iter denotes amount of simulated games to play from start state
+        // TODO: Rename player_turn
         double random_rollout(const chess::position &state, chess::side player_turn, std::mt19937 &generator, int n_iter=10)
         {
             double accumulated_t{0};
