@@ -136,12 +136,12 @@ namespace node
             // Can be useful if we want to keep the tree from the previous iterations
             std::shared_ptr<Node> best_child() const
             {
-                std::vector<double> UCB1_scores{};
+                std::vector<double> winrates{};
                 for (std::shared_ptr<Node> child : children)
                 {
-                    UCB1_scores.push_back(child->UCB1());
+                    winrates.push_back(child->t);
                 }
-                return get_max_element<std::shared_ptr<Node>>(children.begin(), UCB1_scores.begin(), UCB1_scores.end());
+                return get_max_element<std::shared_ptr<Node>>(children.begin(), winrates.begin(), winrates.end());
             }
             // Get the move that gives the best child
             // Useful for baseline mcts algorithm
