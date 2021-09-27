@@ -2,14 +2,10 @@
 
 #include <chess/chess.hpp>
 #include <mcts/misc.hpp>
-#include <array>
 #include <vector>
 #include <iterator>
 #include <float.h>
 #include <math.h>
-#include <iterator>
-#include <iostream>
-#include <functional>
 #include <memory>
 
 namespace node
