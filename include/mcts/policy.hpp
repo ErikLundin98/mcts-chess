@@ -1,4 +1,5 @@
-#pragma once
+#ifndef POLICY_H
+#define POLICY_H
 
 #include <functional>
 #include <mcts/node.hpp>
@@ -59,3 +60,5 @@ namespace policy
 
     //TODO: Modular expansion policies
 }
+
+#endif /* POLICY_H */

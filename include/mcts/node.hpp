@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NODE_H
+#define NODE_H
 
 #include <chess/chess.hpp>
 #include <mcts/misc.hpp>
@@ -208,3 +209,5 @@ namespace node
         Node::DRAW_SCORE = draw_score;
     };
 }
+
+#endif /* NODE_H */

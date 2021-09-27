@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MISC_H
+#define MISC_H
 
 #include <random>
 #include <iterator>
@@ -80,3 +81,5 @@ std::unordered_map<std::string, int> parse_config(std::string filename)
     }
     return dict;
 }
+
+#endif /* MISC_H */
