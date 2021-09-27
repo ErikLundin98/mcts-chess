@@ -98,7 +98,7 @@ namespace node
                 {
                     double v_bar = t / n;
                     int N = p ? p->n : 1;
-                    return v_bar + 2.0*sqrt(log(N) / n);
+                    return v_bar + UCB1_CONST*sqrt(log(N) / n);
                 }
             }
 
@@ -184,6 +184,7 @@ namespace node
 
             static double WIN_SCORE;
             static double DRAW_SCORE;
+            static double UCB1_CONST;
 
         protected:
             chess::position state;
@@ -200,13 +201,15 @@ namespace node
     
     double Node::WIN_SCORE = 1.0;
     double Node::DRAW_SCORE = 0.0;
+    double Node::DRAW_SCORE = 2.0;
 
     // Initialize node library 
     // Sets reward scores
     // Not necessary unless modifying scores is desired
-    void init(double win_score, double draw_score) {
+    void init(double win_score, double draw_score, double UCB1_const) {
         Node::WIN_SCORE = win_score;
         Node::DRAW_SCORE = draw_score;
+        Node::UCB1_CONST = UCB1_const;
     };
 }
 

@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     // Initialize engine
     chess::init();
     // If we want to override rewards
-    node::init(WIN_SCORE, DRAW_SCORE);
+    node::init(WIN_SCORE, DRAW_SCORE, 2.0);
 
     // Initialize random generator
     static std::random_device random_device;
