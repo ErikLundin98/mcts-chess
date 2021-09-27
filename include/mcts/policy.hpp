@@ -14,8 +14,7 @@ namespace policy
     {
         // Random rollout policy
         // n_iter denotes amount of simulated games to play from start state
-        // TODO: Rename player_turn
-        double random_rollout(const chess::position &state, chess::side player_turn, std::mt19937 &generator, int n_iter=10)
+        double random_rollout(const chess::position &state, chess::side player_side, std::mt19937 &generator, int n_iter=10)
         {
             double accumulated_t{0};
             for (int i = 0; i < n_iter; ++i)
@@ -31,7 +30,7 @@ namespace policy
                     uneventful_timer = undo.capture != chess::piece::piece_none ? 0 : uneventful_timer + 1;
                 }
 
-                bool is_player_turn = rollout_state.get_turn() == player_turn;
+                bool is_player_turn = rollout_state.get_turn() == player_side;
                 if (rollout_state.is_checkmate())
                 {
                     accumulated_t += is_player_turn ? -node::Node::WIN_SCORE : node::Node::WIN_SCORE;
@@ -46,7 +45,7 @@ namespace policy
         };
 
         // Bad rollout for demonstration purposes only
-        double bad_rollout(chess::position state, chess::side player_turn)
+        double bad_rollout(chess::position state, chess::side player_side)
         {
             return 0;
         };
