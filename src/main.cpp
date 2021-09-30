@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     chess::side enemy_side = chess::side::side_black;
     chess::position start_p = chess::position::from_fen(chess::position::fen_start); // Or chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
     // TODO: Make working with nodes easier for the user
-    std::shared_ptr<node::Node> main_node = std::make_shared<node::Node>(start_p, player_side, player_side);
+    std::shared_ptr<node::Node> main_node = std::make_shared<node::Node>(start_p, player_side);
     
     short moves{0};
 
@@ -79,14 +79,14 @@ int main(int argc, char* argv[])
         if(new_state.is_checkmate() || new_state.is_stalemate()) 
         {
             // Break if game over
-            main_node = std::make_shared<node::Node>(new_state, new_state.get_turn(), player_side, true, std::weak_ptr<node::Node>(), best_move);
+            main_node = std::make_shared<node::Node>(new_state, player_side, true, std::weak_ptr<node::Node>(), best_move);
             break;
         }
         // CPU move
         std::vector<chess::move> cpu_moves{new_state.moves()};
         chess::move cpu_move = *random_element(cpu_moves.begin(), cpu_moves.end(), generator);
         new_state.make_move(cpu_move);
-        main_node = std::make_shared<node::Node>(new_state, new_state.get_turn(), player_side, true, std::weak_ptr<node::Node>(), best_move);
+        main_node = std::make_shared<node::Node>(new_state, player_side, true, std::weak_ptr<node::Node>(), best_move);
     }
     
     std::cout << "Game over. Final state:\n" << main_node->get_state().pieces().to_string() << std::endl;

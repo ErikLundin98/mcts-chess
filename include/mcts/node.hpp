@@ -17,9 +17,8 @@ namespace node
     {
         public:
             // Used to create a node that is not a parent node
-            Node(chess::position state, chess::side side, chess::side player_side, bool is_start_node, std::weak_ptr<Node> parent, chess::move move)
+            Node(chess::position state, chess::side player_side, bool is_start_node, std::weak_ptr<Node> parent, chess::move move)
                 : state{state},
-                node_side{side},
                 player_side{player_side},
                 is_start_node{is_start_node},
                 parent{parent},
@@ -30,7 +29,7 @@ namespace node
                 this->n = 0;
             }
             // Used to create a parent node
-            Node(chess::position state, chess::side side, chess::side player_side) : Node(state, side, player_side, true, std::weak_ptr<Node>(), chess::move()) {}
+            Node(chess::position state, chess::side player_side) : Node(state, player_side, true, std::weak_ptr<Node>(), chess::move()) {}
             ~Node() = default;
             // Get child nodes
             inline std::vector<std::shared_ptr<Node>> get_children() const
@@ -67,7 +66,7 @@ namespace node
                 for (chess::move child_move : available_moves)
                 {
                     chess::position child_state = state.copy_move(child_move); // TODO - Make this optional
-                    std::shared_ptr<Node> new_child = std::make_shared<Node>(child_state, child_state.get_turn(), player_side, false, weak_from_this(), child_move);
+                    std::shared_ptr<Node> new_child = std::make_shared<Node>(child_state, player_side, false, weak_from_this(), child_move);
                     if (new_child->state.is_checkmate() || new_child->state.is_stalemate())
                     {
                         if (new_child->state.is_checkmate())
@@ -188,7 +187,6 @@ namespace node
 
         protected:
             chess::position state;
-            chess::side node_side;
             chess::side player_side;
             chess::move move;
             bool is_start_node;
@@ -201,7 +199,7 @@ namespace node
     
     double Node::WIN_SCORE = 1.0;
     double Node::DRAW_SCORE = 0.0;
-    double Node::DRAW_SCORE = 2.0;
+    double Node::UCB1_CONST = 2.0;
 
     // Initialize node library 
     // Sets reward scores
