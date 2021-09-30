@@ -37,8 +37,8 @@ int main(int argc, char* argv[])
     chess::position game_board = chess::position::from_fen(chess::position::fen_start); // Or chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
     
     // Initialize models to play against each other
-    mcts_model::Model model_1{policy, chess::side::side_white};
-    mcts_model::Model model_2{policy, chess::side::side_black};
+    mcts_model::TimedModel model_1{policy, chess::side::side_white};
+    mcts_model::TimedModel model_2{policy, chess::side::side_black};
     
     
     short moves{0};
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     }
     
     std::cout << "-- Final state --" << std::endl << game_board.to_string() << std::endl;
-    
-
+    std::cout << "time report for model 1:" << std::endl << model_1.time_report() << std::endl;
+    std::cout << "time report for model 2:" << std::endl << model_2.time_report() << std::endl;
     return 0;
 }
