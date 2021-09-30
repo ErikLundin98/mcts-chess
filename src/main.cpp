@@ -20,7 +20,6 @@ int main(int argc, char* argv[])
     int ROLLOUT_SIMULATIONS = dict["ROLLOUT_SIMULATIONS"];
     int WIN_SCORE = dict["WIN_SCORE"];
     int DRAW_SCORE = dict["DRAW_SCORE"];
-    int PRINT_DEPTH = dict["PRINT_DEPTH"];
 
     // Initialize engine & set node parameters
     chess::init();
