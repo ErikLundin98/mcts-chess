@@ -1,6 +1,7 @@
 #include <chess/chess.hpp>
 #include <mcts/node.hpp>
 #include <mcts/policy.hpp>
+#include <mcts/mcts_model.hpp>
 #include <iostream>
 #include <string>
 #include <memory>
@@ -21,9 +22,8 @@ int main(int argc, char* argv[])
     int DRAW_SCORE = dict["DRAW_SCORE"];
     int PRINT_DEPTH = dict["PRINT_DEPTH"];
 
-    // Initialize engine
+    // Initialize engine & set node parameters
     chess::init();
-    // If we want to override rewards
     node::init(WIN_SCORE, DRAW_SCORE, 2.0);
 
     // Initialize random generator
@@ -33,71 +33,31 @@ int main(int argc, char* argv[])
     auto policy = std::bind(policy::rollout::random_rollout, std::placeholders::_1, std::placeholders::_2, generator, ROLLOUT_SIMULATIONS);
 
     // Initialize MCTS node
-    chess::side player_side = chess::side::side_white;
     chess::side enemy_side = chess::side::side_black;
-    chess::position start_p = chess::position::from_fen(chess::position::fen_start); // Or chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
-    // TODO: Make working with nodes easier for the user
-    std::shared_ptr<node::Node> main_node = std::make_shared<node::Node>(start_p, player_side);
+    chess::position game_board = chess::position::from_fen(chess::position::fen_start); // Or chess::position::from_fen("3K4/8/8/8/8/6R1/7R/3k4 w - - 0 1")
+    
+    // Initialize models to play against each other
+    mcts_model::Model model_1{policy, chess::side::side_white};
+    mcts_model::Model model_2{policy, chess::side::side_black};
+    
     
     short moves{0};
 
-    Timer timer{};
-    double t_expanding{0};
-    double t_traversing{0};
-    double t_rollouting{0};
-    double t_backpropping{0};
-    // Main MCTS loop
-    while(!main_node->is_over() && moves++ < MAX_MOVES)
+    while(true)
     {
-        main_node->expand();
-        for(int i = 0 ; i < MAX_MCTS_ITERATIONS ; ++i)
-        {
-            timer.set_start();
-            std::shared_ptr<node::Node> current_node = main_node->traverse();
-            t_traversing += timer.get_time();
-            if(current_node->is_over()) break;
-            
-            if(current_node->get_n() != 0)
-            {
-                timer.set_start();
-                current_node->expand();
-                t_expanding += timer.get_time();
-                current_node = current_node->get_children().front();
-            }
-            timer.set_start();
-            current_node->rollout(policy);
-            t_rollouting += timer.get_time(true);
-            current_node->backpropagate();
-            t_backpropping += timer.get_time();
-        }
+        chess::move model_1_move{model_1.search(game_board, MAX_MCTS_ITERATIONS)};
+        game_board.make_move(model_1_move);
+        if(game_board.is_checkmate() || game_board.is_stalemate()) break;
+        chess::move model_2_move{model_2.search(game_board, MAX_MCTS_ITERATIONS)};
+        game_board.make_move(model_2_move);
+        if(game_board.is_checkmate() || game_board.is_stalemate() || moves++ == MAX_MOVES) break; 
+        std::cout << "player 1 move " << model_1_move.to_lan() << std::endl;
+        std::cout << "player 2 move " << model_2_move.to_lan() << std::endl;
+        std::cout << "-- Game state --" << std::endl << game_board.to_string() << std::endl << std::endl;
+    }
+    
+    std::cout << "-- Final state --" << std::endl << game_board.to_string() << std::endl;
+    
 
-        std::cout << "--- Node tree after search ---" << std::endl << main_node->to_string(PRINT_DEPTH) << std::endl << std::endl;
-        // MCTS move
-        chess::move best_move = main_node->best_move();
-        std::cout << "decided to make move " << best_move.to_lan() << ", total player moves: " << moves << '/' << MAX_MOVES << std::endl;
-        chess::position new_state = main_node->get_state().copy_move(best_move);
-        if(new_state.is_checkmate() || new_state.is_stalemate()) 
-        {
-            // Break if game over
-            main_node = std::make_shared<node::Node>(new_state, player_side, true, std::weak_ptr<node::Node>(), best_move);
-            break;
-        }
-        // CPU move
-        std::vector<chess::move> cpu_moves{new_state.moves()};
-        chess::move cpu_move = *random_element(cpu_moves.begin(), cpu_moves.end(), generator);
-        new_state.make_move(cpu_move);
-        main_node = std::make_shared<node::Node>(new_state, player_side, true, std::weak_ptr<node::Node>(), best_move);
-    }
-    
-    std::cout << "Game over. Final state:\n" << main_node->get_state().pieces().to_string() << std::endl;
-    
-    if(PRINT_TIME)
-    {
-        std::cout 
-        << "MCTS time report (in s): \ntime spent traversing: " << t_traversing 
-        << "\ntime spent expanding: " << t_expanding 
-        << "\ntime spent rollouting: " << t_rollouting 
-        << "\ntime spent backpropping:" << t_backpropping;
-    }
     return 0;
 }
